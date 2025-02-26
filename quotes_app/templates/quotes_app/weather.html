@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Info</title>
+    <script>
+    async function fetchWeather() {
+        const city = document.getElementById("city").value || "London";
+
+        try {
+            const response = await fetch(`/weather/?city=${city}`);
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.error || "Failed to fetch weather data");
+            }
+
+            // Ensure data.main exists before accessing temp
+            if (!data.main) {
+                throw new Error("Invalid response from API");
+            }
+
+            document.getElementById("weather-result").innerHTML = `
+                <h3>Weather in ${data.name}</h3>
+                <p>Temperature: ${data.main.temp}°C</p>
+                <p>Humidity: ${data.main.humidity}%</p>
+                <p>Weather: ${data.weather[0].description}</p>
+            `;
+        } catch (error) {
+            document.getElementById("weather-result").innerHTML = `<p style="color: red;">${error.message}</p>`;
+        }
+    }
+</script>
+
+</head>
+<body>
+    <h2>Check Weather</h2>
+    <input type="text" id="city" placeholder="Enter city name">
+    <button onclick="fetchWeather()">Get Weather</button>
+    <div id="weather-result"></div>
+</body>
+</html>
